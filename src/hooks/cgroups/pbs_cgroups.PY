@@ -684,14 +684,16 @@ class HookUtils(object):
                 'name': 'execjob_attach',
                 'handler': self._execjob_attach_handler
             }
-            self.hook_events[pbs.EXECJOB_RESIZE] = {
-                'name': 'execjob_resize',
-                'handler': self._execjob_resize_handler
-            }
-            self.hook_events[pbs.EXECJOB_ABORT] = {
-                'name': 'execjob_abort',
-                'handler': self._execjob_end_handler
-            }
+            if 'EXECJOB_RESIZE' in dir(pbs):
+                self.hook_events[pbs.EXECJOB_RESIZE] = {
+                    'name': 'execjob_resize',
+                    'handler': self._execjob_resize_handler
+                }
+            if 'EXECJOB_ABORT' in dir(pbs):
+                self.hook_events[pbs.EXECJOB_ABORT] = {
+                    'name': 'execjob_abort',
+                    'handler': self._execjob_end_handler
+                }
             self.hook_events[pbs.MOM_EVENTS] = {
                 'name': 'mom_events',
                 'handler': None
@@ -3983,7 +3985,7 @@ class CgroupUtils(object):
         # Make two attempts since self.cleanup_orphans may actually fix the
         # problem we see in a first attempt
         for attempt in range(2):
-            if event_type == pbs.EXECJOB_RESIZE:
+            if 'EXECJOB_RESIZE' in dir(pbs) and event_type == pbs.EXECJOB_RESIZE:
                 # consider current job's resources as being available,
                 # where a subset of them would be re-assigned to the
                 # the same job.
